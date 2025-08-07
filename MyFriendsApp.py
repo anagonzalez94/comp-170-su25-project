@@ -1,14 +1,11 @@
 from Friend import Friend
 from Birthday import Birthday
 
-friendlist = []
+friendslist = []
 
 def createFriend():
     firstName = input("First name: ")
     lastName = input("Last name: ")
-    friend = Friend(firstName, lastName)
-    birthDay = input("Birthday day: ")
-    birthMonth = input("Birthday month (1-12): ")
 
 # Main menu loop
 def mainMenu():
