@@ -16,7 +16,7 @@ def underlined(text):
 
 friendslist = []
 
-#Fix later
+# Load existing friend data on startup, reading CSV file to avoid manually inputting everything
 def loadFriendsList():
     with open("friendslist.csv", "r", newline="") as file:
         reader = csv.reader(file)
@@ -29,6 +29,8 @@ def loadFriendsList():
             friend.zipCode(row["zipCode"])
             friendslist.append(friend)
 
+# Creates new friend
+# Manual process for entering each value
 def createFriend():
     print(bold(f"Please enter the following information about your friend :)"))
     firstName = input("First name: ")
@@ -43,6 +45,23 @@ def createFriend():
     friend.zipCode = input("Zip code: ")
     friendslist.append(friend)
 
+# Loads friends from existing CSV
+def loadFriendsCSV():
+    filePath = input("Enter CSV file path you would like to use: ")
+    with open(filePath, newline="") as file:
+        reader = csv.reader(file)
+        for row in reader:
+            friend = Friend(row["firstName"], row["lastName"])
+            friend.set_birthday(int(row["birthMonth"]),int(row["birthDay"]))
+            friend.streetAddress(row["streetAddress"])
+            friend.city(row["city"])
+            friend.state(row["state"])
+            friend.zipCode(row["zipCode"])
+            friendslist.append(friend)
+        print(blue("Loaded friends!"))
+
+# Searches for friends by first name
+# Edit or delete friend's profile
 def searchFriend():
     searchName = input("Enter friend's first name: ").lower()
     for friend in friendslist:
@@ -106,7 +125,7 @@ def mainMenu():
             if subSelection == "1.1":
                 createFriend()
             elif subSelection == "1.2":
-                print("Still working on it")
+                loadFriendsCSV()
             else:
                 print(red(f"Invalid input. Try again!"))
         elif selection == "2":
