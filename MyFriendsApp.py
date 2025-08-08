@@ -1,5 +1,6 @@
 from Friend import Friend
 from Birthday import Birthday
+import csv
 
 # ANSI values for prettier text
 def red(text):
@@ -16,9 +17,17 @@ def underlined(text):
 friendslist = []
 
 #Fix later
-#def loadFriendsList():
-    #with open("friendslist.csv") as file:
-        #for line in file
+def loadFriendsList():
+    with open("friendslist.csv", "r", newline="") as file:
+        reader = csv.reader(file)
+        for row in reader:
+            friend = Friend(row["firstName"],row["lastName"])
+            friend.set_birthday(int(row["birthMonth"]),int(row["birthDay"]))
+            friend.streetAddress(row["streetAddress"])
+            friend.city(row["city"])
+            friend.state(row["state"])
+            friend.zipCode(row["zipCode"])
+            friendslist.append(friend)
 
 def createFriend():
     print(bold(f"Please enter the following information about your friend :)"))
@@ -34,41 +43,81 @@ def createFriend():
     friend.zipCode = input("Zip code: ")
     friendslist.append(friend)
 
+def searchFriend():
+    searchName = input("Enter friend's first name: ").lower()
+    for friend in friendslist:
+        if friend.firstName.lower() == searchName:
+            foundFriend = [f for f in friendslist if f.firstName.lower() == searchName]
+            print(f"{friend.firstName} {friend.lastName} is your friend!")
+            print(underlined("What would you like to do?"))
+            print("1 - Edit friend profile")
+            print("2 - Delete friend")
+            print("3 - Return")
+            searchSelect = input("Enter your selection: ")
+            if searchSelect == "1":
+                print("Working on it")
+            elif searchSelect == "2":
+                confirmation = input("Are you sure you want to delete this friend? (Y/N)")
+                if confirmation == "Y":
+                    friendslist.remove(foundFriend)
+            else:
+                print("Invalid input. Try again!")
+                return
+
 # Run reports menu
 def runReports():
-    print(underlined(f"\Reports Menu"))
-    print("3.1 - List of friends alphabetically")
-    print("3.2 - List of friends by upcoming birthdays")
-    print("3.3 - Mailing labels for friends")
-    print(red(f"3.9 - Return to previous menu"))
-    reportSelect = input("Enter your selection: ")
+    while True:
+        print(underlined(f"\Reports Menu"))
+        print("3.1 - List of friends alphabetically")
+        print("3.2 - List of friends by upcoming birthdays")
+        print("3.3 - Mailing labels for friends")
+        print(red(f"3.9 - Return to previous menu"))
+        reportSelect = input("Enter your selection: ")
+        if reportSelect == "3.1":
+            friendsSorted = sorted(friendslist, key = lambda f: (f.lastName))
+            for friend in friendsSorted:
+                print(f"{friend.lastName}, {friend.firstName}")
+        elif reportSelect == "3.2":
+            birthdaysSorted = sorted(friendslist, key = lambda f: (f.birthday.days_until()))
+            for friend in birthdaysSorted:
+                print(f"{friend.firstName} {friend.lastName}'s birthday is on {friend.birthday}")
+        elif reportSelect == "3.3":
+            for friend in friendslist:
+                print(f"{friend.firstName} {friend.lastName}'s address is {friend.streetAddress} {friend.city}, {friend.state} {friend.zipCode}")
+        else:
+            print("Returning to Main Menu")
+            break
 
 # Main menu loop
 def mainMenu():
-    print(bold(f"Welcome to MyFriends!"))
-    print(underlined(f"\nMain Menu"))
-    print("1 - Create new friend record")
-    print("2 - Search for a friend")
-    print("3 - Run reports")
-    print(red(f"4 - Exit"))
-    selection = input("Enter your selection: ")
+    while True:
+        print(bold(f"Welcome to MyFriends!"))
+        print(underlined(f"\nMain Menu"))
+        print("1 - Create new friend record")
+        print("2 - Search for a friend")
+        print("3 - Run reports")
+        print(red(f"4 - Exit"))
+        selection = input("Enter your selection: ")
 
-    if selection == "1":
-        print("1.1 - Create new friend manually")
-        print("1.2 - Load friends from CSV file")
-        subSelection = input("Enter your selection: ")
-        if subSelection == "1.1":
-            createFriend()
-        elif subSelection == "1.2":
-            print("Still working on it")
+        if selection == "1":
+            print("1.1 - Create new friend manually")
+            print("1.2 - Load friends from CSV file")
+            subSelection = input("Enter your selection: ")
+            if subSelection == "1.1":
+                createFriend()
+            elif subSelection == "1.2":
+                print("Still working on it")
+            else:
+                print(red(f"Invalid input. Try again!"))
+        elif selection == "2":
+            searchFriend()
+        elif selection == "3":
+            runReports()
+        elif selection == "4":
+            print("See you next time!")
+            break
         else:
             print(red(f"Invalid input. Try again!"))
-    elif selection == "2":
-        print("Searching for friend...")
-    elif selection == "3":
-        print("Reports Menu")
-    else:
-        print(red(f"Invalid input. Try again!"))
 
 # Startup
 if __name__ == "__main__":
